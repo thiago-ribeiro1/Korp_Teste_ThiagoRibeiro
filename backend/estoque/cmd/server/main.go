@@ -43,7 +43,25 @@ func main() {
 	produtosHandler.RegisterRoutes(mux)
 
 	log.Printf("serviço de estoque rodando na porta %s", cfg.Port)
-	if err := http.ListenAndServe(":"+cfg.Port, mux); err != nil {
+	if err := http.ListenAndServe(":"+cfg.Port, withCORS(mux)); err != nil {
 		log.Fatalf("erro ao iniciar servidor: %v", err)
 	}
+}
+
+// withCORS libera o acesso do frontend Angular (rodando em outra porta) aos
+// dois microsserviços. Origem liberada de forma ampla propositalmente, já
+// que o teste não define autenticação nem múltiplos ambientes.
+func withCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }

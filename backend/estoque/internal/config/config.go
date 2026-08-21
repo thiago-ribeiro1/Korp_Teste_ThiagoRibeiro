@@ -1,38 +1,69 @@
 package config
 
-import "os"
+import (
+	"bufio"
+	"log"
+	"os"
+	"strings"
+)
 
-// Config concentra as variáveis de ambiente usadas pelo serviço de Estoque.
-// Mantemos a leitura de configuração centralizada aqui para não espalhar
-// chamadas a os.Getenv pelo resto do código.
 type Config struct {
-	// DatabaseURL é a string de conexão completa do PostgreSQL, no formato:
-	// postgres://usuario:senha@host:porta/nome_do_banco?sslmode=disable
 	DatabaseURL string
-
-	// Port é a porta HTTP em que o serviço de Estoque vai escutar.
-	Port string
+	Port        string
 }
 
-// Load lê as variáveis de ambiente ESTOQUE_DB_URL e ESTOQUE_PORT.
-// Caso não estejam definidas, aplica valores padrão adequados para
-// desenvolvimento local, para que o serviço rode com "go run" sem
-// exigir configuração adicional.
+// Load lê variáveis de ambiente do processo e, se existir, de um arquivo
+// .env na raiz do serviço. Não há senha padrão embutida: ESTOQUE_DB_URL é
+// obrigatória para evitar credenciais hardcoded no código-fonte.
 func Load() Config {
+	loadDotEnv(".env")
+
+	dbURL := os.Getenv("ESTOQUE_DB_URL")
+	if dbURL == "" {
+		log.Fatal("variável de ambiente ESTOQUE_DB_URL não definida (configure um arquivo .env a partir do .env.example)")
+	}
+
 	return Config{
-		DatabaseURL: getEnv(
-			"ESTOQUE_DB_URL",
-			"postgres://postgres:REDACTED@localhost:5432/estoque_db?sslmode=disable",
-		),
-		Port: getEnv("ESTOQUE_PORT", "8081"),
+		DatabaseURL: dbURL,
+		Port:        getEnv("ESTOQUE_PORT", "8081"),
 	}
 }
 
-// getEnv retorna o valor da variável de ambiente "key" se ela estiver
-// definida e não vazia; caso contrário, retorna "fallback".
 func getEnv(key, fallback string) string {
 	if v := os.Getenv(key); v != "" {
 		return v
 	}
 	return fallback
+}
+
+// loadDotEnv aplica pares KEY=VALUE de um arquivo .env como variáveis de
+// ambiente do processo, sem sobrescrever variáveis já definidas no shell.
+// Implementação simples e sem dependências externas, suficiente para o
+// escopo do teste.
+func loadDotEnv(path string) {
+	file, err := os.Open(path)
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+
+		key, value, found := strings.Cut(line, "=")
+		if !found {
+			continue
+		}
+
+		key = strings.TrimSpace(key)
+		value = strings.Trim(strings.TrimSpace(value), `"'`)
+
+		if _, exists := os.LookupEnv(key); !exists {
+			os.Setenv(key, value)
+		}
+	}
 }
