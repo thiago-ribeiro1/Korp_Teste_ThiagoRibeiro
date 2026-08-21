@@ -1,0 +1,18 @@
+# Go
+backend/**/bin/
+backend/**/*.exe
+backend/**/*.test
+
+# Node / Angular
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# Ambiente
+.env
+*.env.local
+
+# Editor / SO
+.vscode/
+.idea/
+.DS_Store
