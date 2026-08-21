@@ -1,0 +1,37 @@
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand__diamond"></span>
+      <span class="brand__name">FISCALIS</span>
+    </div>
+
+    <nav class="nav">
+      <span class="nav__label">Menu de navegação</span>
+      <a routerLink="/produtos" routerLinkActive="active" class="nav__item">Produtos</a>
+      <a routerLink="/notas-fiscais" routerLinkActive="active" class="nav__item">Notas Fiscais</a>
+    </nav>
+
+    <div class="services">
+      <span class="nav__label">Serviços</span>
+      <div class="services__item">
+        <span class="dot" [class.dot--ok]="status.estoque" [class.dot--erro]="!status.estoque"></span>
+        Estoque <small>{{ status.estoque ? 'disponível' : 'indisponível' }}</small>
+      </div>
+      <div class="services__item">
+        <span class="dot" [class.dot--ok]="status.faturamento" [class.dot--erro]="!status.faturamento"></span>
+        Faturamento <small>{{ status.faturamento ? 'disponível' : 'indisponível' }}</small>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <span>Sistema de emissão de Notas Fiscais</span>
+      <span class="topbar__operador">Operador ▾</span>
+    </header>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
