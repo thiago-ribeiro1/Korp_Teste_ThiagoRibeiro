@@ -1,0 +1,110 @@
+<div class="breadcrumb"><a routerLink="/produtos">Início</a> / Produtos</div>
+
+<div class="page-header">
+  <h1>Produtos</h1>
+  <div class="toolbar">
+    <input
+      class="btn"
+      style="min-width:220px; font-weight:400; text-align:left"
+      placeholder="Buscar por código ou descrição"
+      [(ngModel)]="busca"
+      (keyup.enter)="carregar()"
+    />
+    <button class="btn" (click)="carregar()">Filtrar</button>
+    <button class="btn btn--primary" (click)="abrirNovo()">+ Novo Produto</button>
+  </div>
+</div>
+
+<div class="alert alert--sucesso" *ngIf="mensagemSucesso">
+  <span>{{ mensagemSucesso }}</span>
+  <button class="btn" style="padding:2px 8px" (click)="mensagemSucesso = ''">×</button>
+</div>
+
+<div class="alert alert--erro" *ngIf="erro">
+  <span>{{ erro }}</span>
+  <button class="btn" style="padding:2px 8px" (click)="erro = ''">×</button>
+</div>
+
+<div class="card">
+  <table class="table" *ngIf="produtos.length > 0">
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Descrição</th>
+        <th>Saldo</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let produto of produtos">
+        <td>{{ produto.codigo }}</td>
+        <td>{{ produto.descricao }}</td>
+        <td>{{ produto.saldo }}</td>
+        <td>
+          <button class="btn" (click)="abrirEdicao(produto)">Editar</button>
+          <button class="btn btn--danger" (click)="confirmarExclusao(produto)">Excluir</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="empty-state" *ngIf="!carregando && produtos.length === 0">
+    <p><strong>Nenhum produto cadastrado</strong></p>
+    <p>Cadastre um produto para utilizá-lo em notas fiscais.</p>
+    <button class="btn btn--primary" (click)="abrirNovo()">Novo Produto</button>
+  </div>
+</div>
+
+<!-- Modal de cadastro/edição -->
+<div class="modal-overlay" *ngIf="modalAberto">
+  <div class="modal">
+    <div class="modal__header">
+      <span>{{ produtoEmEdicao ? 'Editar Produto' : 'Cadastro de Produto' }}</span>
+      <button (click)="fecharModal()">×</button>
+    </div>
+    <div class="modal__body">
+      <div class="alert alert--erro" *ngIf="erroModal">{{ erroModal }}</div>
+
+      <div class="field" [class.field--erro]="errosForm['codigo']">
+        <label>Código *</label>
+        <input [(ngModel)]="form.codigo" placeholder="Informe o código" />
+        <small *ngIf="errosForm['codigo']">{{ errosForm['codigo'] }}</small>
+      </div>
+
+      <div class="field" [class.field--erro]="errosForm['descricao']">
+        <label>Descrição *</label>
+        <input [(ngModel)]="form.descricao" placeholder="Nome do produto" />
+        <small *ngIf="errosForm['descricao']">{{ errosForm['descricao'] }}</small>
+      </div>
+
+      <div class="field" [class.field--erro]="errosForm['saldo']">
+        <label>Saldo *</label>
+        <input type="number" min="0" [(ngModel)]="form.saldo" placeholder="Quantidade disponível" />
+        <small *ngIf="errosForm['saldo']">{{ errosForm['saldo'] }}</small>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn" (click)="fecharModal()">Cancelar</button>
+      <button class="btn btn--primary" [disabled]="salvando" (click)="salvar()">
+        {{ salvando ? 'Salvando...' : 'Salvar Produto' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmação de exclusão -->
+<div class="modal-overlay" *ngIf="produtoParaExcluir">
+  <div class="modal">
+    <div class="modal__header">
+      <span>Excluir Produto</span>
+      <button (click)="cancelarExclusao()">×</button>
+    </div>
+    <div class="modal__body">
+      <p>Tem certeza que deseja excluir o produto <strong>{{ produtoParaExcluir.codigo }}</strong>?</p>
+    </div>
+    <div class="modal__footer">
+      <button class="btn" (click)="cancelarExclusao()">Cancelar</button>
+      <button class="btn btn--danger" (click)="excluir()">Excluir</button>
+    </div>
+  </div>
+</div>

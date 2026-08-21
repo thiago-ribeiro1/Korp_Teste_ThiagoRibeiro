@@ -1,0 +1,109 @@
+<div *ngIf="carregando">Carregando...</div>
+
+<div class="alert alert--erro" *ngIf="!carregando && erroCarregamento">
+  {{ erroCarregamento }}
+  <a routerLink="/notas-fiscais">Voltar para a listagem</a>
+</div>
+
+<ng-container *ngIf="!carregando && nota as nota">
+  <div class="breadcrumb"><a routerLink="/notas-fiscais">Início / Notas Fiscais</a> / {{ numeracaoFormatada(nota.numeracao) }}</div>
+
+  <div class="page-header">
+    <div>
+      <h1>
+        Nota Fiscal {{ numeracaoFormatada(nota.numeracao) }}
+        <span
+          class="badge"
+          [class.badge--aberta]="nota.status === 'Aberta'"
+          [class.badge--fechada]="nota.status === 'Fechada'"
+          style="vertical-align:middle; margin-left:8px"
+        >{{ nota.status }}</span>
+      </h1>
+    </div>
+    <div class="toolbar">
+      <button class="btn" routerLink="/notas-fiscais">Voltar</button>
+      <button
+        class="btn btn--primary"
+        [disabled]="nota.status !== 'Aberta' || imprimindo"
+        (click)="imprimir()"
+      >
+        {{ imprimindo ? 'Imprimindo...' : 'Imprimir Nota' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="alert alert--sucesso" *ngIf="mensagemSucesso">{{ mensagemSucesso }}</div>
+
+  <div class="alert alert--erro" *ngIf="erroImpressao">
+    <div>
+      <div>{{ erroImpressao }}</div>
+      <button class="btn" style="margin-top:8px" (click)="imprimir()">Tentar novamente</button>
+    </div>
+  </div>
+
+  <div class="alert alert--aviso" *ngIf="!status.estoque">
+    O serviço de estoque está indisponível no momento. A impressão fica bloqueada até ele voltar.
+    O cadastro e a consulta de notas seguem funcionando normalmente.
+  </div>
+
+  <div class="card" style="padding:18px; margin-bottom:18px">
+    <h3>Dados da Nota Fiscal</h3>
+    <div style="display:flex; gap:40px; margin-top:10px; font-size:13px">
+      <div>
+        <div style="color:var(--cor-texto-suave)">Numeração</div>
+        <div><strong>{{ numeracaoFormatada(nota.numeracao) }}</strong></div>
+      </div>
+      <div>
+        <div style="color:var(--cor-texto-suave)">Status</div>
+        <div><strong>{{ nota.status }}</strong></div>
+      </div>
+      <div>
+        <div style="color:var(--cor-texto-suave)">Produtos</div>
+        <div><strong>{{ nota.quantidade_itens }}</strong></div>
+      </div>
+      <div>
+        <div style="color:var(--cor-texto-suave)">Quantidade Total</div>
+        <div><strong>{{ nota.quantidade_total }}</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:18px">
+    <h3>Produtos da Nota</h3>
+    <table class="table" style="margin-top:10px">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Descrição</th>
+          <th>Quantidade</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of nota.itens">
+          <td>{{ item.produto_codigo }}</td>
+          <td>{{ item.produto_descricao }}</td>
+          <td>{{ item.quantidade }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top:14px; font-size:12px; color:var(--cor-texto-suave)" *ngIf="nota.status === 'Aberta'">
+      Ao imprimir, o saldo de cada produto é reduzido pela quantidade utilizada e o status passa para Fechada.
+    </p>
+    <p style="margin-top:14px; font-size:12px; color:var(--cor-texto-suave)" *ngIf="nota.status === 'Fechada'">
+      Notas fechadas não podem ser impressas novamente nem ter seus itens alterados.
+    </p>
+  </div>
+</ng-container>
+
+<!-- Overlay de processamento durante a impressão -->
+<div class="modal-overlay" *ngIf="imprimindo">
+  <div class="modal">
+    <div class="modal__header"><span>Impressão da Nota Fiscal</span></div>
+    <div class="modal__body" style="text-align:center; padding:30px 18px">
+      <p><strong>Processando impressão</strong></p>
+      <p style="color:var(--cor-texto-suave); font-size:13px">
+        A nota está sendo fechada e o saldo dos produtos, atualizado. Aguarde a conclusão.
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,69 @@
+<div class="breadcrumb"><a routerLink="/notas-fiscais">Início / Notas Fiscais</a> / Nova</div>
+
+<div class="page-header">
+  <h1>Nova Nota Fiscal</h1>
+  <div class="toolbar">
+    <button class="btn" routerLink="/notas-fiscais">Cancelar</button>
+    <button class="btn btn--primary" [disabled]="salvando" (click)="salvar()">
+      {{ salvando ? 'Salvando...' : 'Salvar Nota' }}
+    </button>
+  </div>
+</div>
+
+<div class="alert alert--erro" *ngIf="erro">{{ erro }}</div>
+
+<div class="card" style="padding:18px; margin-bottom:18px">
+  <h3>Dados da Nota Fiscal</h3>
+  <p style="color:var(--cor-texto-suave); font-size:13px">
+    A numeração é atribuída automaticamente em sequência. O saldo dos produtos é
+    atualizado somente na impressão da nota.
+  </p>
+</div>
+
+<div class="card" style="padding:18px">
+  <h3>Produtos da Nota</h3>
+
+  <div style="display:flex; gap:10px; align-items:flex-end; margin:14px 0">
+    <div class="field" style="flex:1; margin-bottom:0">
+      <label>Produto</label>
+      <select [(ngModel)]="produtoSelecionadoId">
+        <option [ngValue]="null">Selecione um produto cadastrado</option>
+        <option *ngFor="let produto of produtos" [ngValue]="produto.id">
+          {{ produto.codigo }} — {{ produto.descricao }} (saldo: {{ produto.saldo }})
+        </option>
+      </select>
+    </div>
+    <div class="field" style="width:120px; margin-bottom:0">
+      <label>Quantidade</label>
+      <input type="number" min="1" [(ngModel)]="quantidadeSelecionada" />
+    </div>
+    <button class="btn btn--primary" (click)="adicionarItem()">Adicionar</button>
+  </div>
+
+  <table class="table" *ngIf="itens.length > 0">
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Descrição</th>
+        <th>Saldo Atual</th>
+        <th>Quantidade</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of itens">
+        <td>{{ item.codigo }}</td>
+        <td>{{ item.descricao }}</td>
+        <td>{{ item.saldoAtual }}</td>
+        <td>{{ item.quantidade }}</td>
+        <td><button class="btn btn--danger" (click)="removerItem(item.codigo)">Remover</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p *ngIf="itens.length === 0" style="color:var(--cor-texto-suave)">Nenhum produto incluído ainda.</p>
+
+  <p style="margin-top:14px; font-size:13px; color:var(--cor-texto-suave)" *ngIf="itens.length > 0">
+    {{ itens.length }} produtos incluídos · Quantidade total: {{ quantidadeTotal }}
+  </p>
+</div>
