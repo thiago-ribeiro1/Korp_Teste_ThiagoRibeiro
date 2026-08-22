@@ -1,32 +1,56 @@
 <div class="shell">
-  <aside class="sidebar">
+  <div class="sidebar-overlay" *ngIf="sidebarAberta" (click)="fecharSidebar()"></div>
+
+  <aside class="sidebar" [class.sidebar--aberta]="sidebarAberta">
     <div class="brand">
       <span class="brand__diamond"></span>
-      <span class="brand__name">FISCALIS</span>
+      <span class="brand__name">TECHSOLUTIONS</span>
     </div>
 
-    <nav class="nav">
+    <nav class="nav" (click)="fecharSidebar()">
       <span class="nav__label">Menu de navegação</span>
-      <a routerLink="/produtos" routerLinkActive="active" class="nav__item">Produtos</a>
-      <a routerLink="/notas-fiscais" routerLinkActive="active" class="nav__item">Notas Fiscais</a>
+      <a routerLink="/produtos" routerLinkActive="active" class="nav__item"
+        >Produtos</a
+      >
+      <a routerLink="/notas-fiscais" routerLinkActive="active" class="nav__item"
+        >Notas Fiscais</a
+      >
     </nav>
 
     <div class="services">
       <span class="nav__label">Serviços</span>
       <div class="services__item">
-        <span class="dot" [class.dot--ok]="status.estoque" [class.dot--erro]="!status.estoque"></span>
-        Estoque <small>{{ status.estoque ? 'disponível' : 'indisponível' }}</small>
+        <span
+          class="dot"
+          [class.dot--ok]="status.estoque"
+          [class.dot--erro]="!status.estoque"
+        ></span>
+        Estoque
+        <small>{{ status.estoque ? "disponível" : "indisponível" }}</small>
       </div>
       <div class="services__item">
-        <span class="dot" [class.dot--ok]="status.faturamento" [class.dot--erro]="!status.faturamento"></span>
-        Faturamento <small>{{ status.faturamento ? 'disponível' : 'indisponível' }}</small>
+        <span
+          class="dot"
+          [class.dot--ok]="status.faturamento"
+          [class.dot--erro]="!status.faturamento"
+        ></span>
+        Faturamento
+        <small>{{ status.faturamento ? "disponível" : "indisponível" }}</small>
       </div>
     </div>
   </aside>
 
   <div class="main">
     <header class="topbar">
-      <span>Sistema de emissão de Notas Fiscais</span>
+      <div class="topbar__left">
+        <button
+          type="button"
+          class="menu-toggle"
+          aria-label="Abrir menu de navegação"
+          (click)="alternarSidebar()"
+        >☰</button>
+        <span class="topbar__titulo">Sistema de emissão de Notas Fiscais</span>
+      </div>
       <span class="topbar__operador">Operador ▾</span>
     </header>
 

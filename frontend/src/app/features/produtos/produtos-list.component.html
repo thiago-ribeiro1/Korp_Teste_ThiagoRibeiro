@@ -4,8 +4,7 @@
   <h1>Produtos</h1>
   <div class="toolbar">
     <input
-      class="btn"
-      style="min-width:220px; font-weight:400; text-align:left"
+      class="btn search-input"
       placeholder="Buscar por código ou descrição"
       [(ngModel)]="busca"
       (keyup.enter)="carregar()"
@@ -26,27 +25,29 @@
 </div>
 
 <div class="card">
-  <table class="table" *ngIf="produtos.length > 0">
-    <thead>
-      <tr>
-        <th>Código</th>
-        <th>Descrição</th>
-        <th>Saldo</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let produto of produtos">
-        <td>{{ produto.codigo }}</td>
-        <td>{{ produto.descricao }}</td>
-        <td>{{ produto.saldo }}</td>
-        <td>
-          <button class="btn" (click)="abrirEdicao(produto)">Editar</button>
-          <button class="btn btn--danger" (click)="confirmarExclusao(produto)">Excluir</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-responsive" *ngIf="produtos.length > 0">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Descrição</th>
+          <th>Saldo</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let produto of produtos">
+          <td>{{ produto.codigo }}</td>
+          <td>{{ produto.descricao }}</td>
+          <td>{{ produto.saldo }}</td>
+          <td>
+            <button class="btn" (click)="abrirEdicao(produto)">Editar</button>
+            <button class="btn btn--danger" (click)="confirmarExclusao(produto)">Excluir</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <div class="empty-state" *ngIf="!carregando && produtos.length === 0">
     <p><strong>Nenhum produto cadastrado</strong></p>

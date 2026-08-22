@@ -70,6 +70,12 @@ button {
   border-radius: var(--raio);
 }
 
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -114,6 +120,7 @@ button {
 .alert--erro { background: var(--cor-erro-bg); color: var(--cor-erro); border: 1px solid #f3c6c0; }
 .alert--sucesso { background: var(--cor-sucesso-bg); color: var(--cor-sucesso); border: 1px solid #c7e9d5; }
 .alert--aviso { background: var(--cor-aviso-bg); color: var(--cor-aviso); border: 1px solid #f0dcae; }
+.alert > *:first-child { min-width: 0; overflow-wrap: break-word; flex: 1 1 200px; }
 
 .field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
 .field label { font-size: 12px; font-weight: 600; color: var(--cor-texto-suave); }
@@ -176,8 +183,61 @@ button {
 }
 .toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
 
+.search-input {
+  min-width: 220px;
+  font-weight: 400;
+  text-align: left;
+}
+
+.card--padded { padding: 18px; }
+.card--padded + .card--padded { margin-top: 18px; }
+
+.data-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 40px;
+  margin-top: 10px;
+  font-size: 13px;
+}
+.data-grid__item { flex: 1 1 140px; }
+.data-grid__label { color: var(--cor-texto-suave); }
+
+.form-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  margin: 14px 0;
+  flex-wrap: wrap;
+}
+.form-row .field { margin-bottom: 0; }
+.form-row .field--grow { flex: 1 1 220px; }
+.form-row .field--fixa { width: 120px; }
+
 .empty-state {
   text-align: center;
   padding: 60px 20px;
   color: var(--cor-texto-suave);
+}
+
+@media (max-width: 640px) {
+  .page-header .toolbar { width: 100%; }
+  .page-header .toolbar > * { flex: 1 1 auto; }
+
+  .search-input { min-width: 0; width: 100%; }
+
+  .card--padded { padding: 14px; }
+  .card--padded + .card--padded { margin-top: 14px; }
+
+  .form-row .field--fixa,
+  .form-row > .btn { width: 100%; }
+
+  .empty-state { padding: 40px 16px; }
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: 20px; }
+
+  .modal__body { padding: 14px; }
+  .modal__footer { padding: 12px 14px; flex-wrap: wrap; }
+  .modal__footer .btn { flex: 1 1 auto; }
 }

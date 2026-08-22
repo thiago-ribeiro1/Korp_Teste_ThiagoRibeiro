@@ -4,8 +4,7 @@
   <h1>Notas Fiscais</h1>
   <div class="toolbar">
     <input
-      class="btn"
-      style="min-width:200px; font-weight:400; text-align:left"
+      class="btn search-input"
       placeholder="Buscar por numeração"
       [(ngModel)]="busca"
       (keyup.enter)="carregar()"
@@ -24,30 +23,32 @@
 <div class="alert alert--erro" *ngIf="erro">{{ erro }}</div>
 
 <div class="card">
-  <table class="table" *ngIf="notas.length > 0">
-    <thead>
-      <tr>
-        <th>Numeração</th>
-        <th>Status</th>
-        <th>Produtos</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let nota of notas">
-        <td>{{ numeracaoFormatada(nota.numeracao) }}</td>
-        <td>
-          <span class="badge" [class.badge--aberta]="nota.status === 'Aberta'" [class.badge--fechada]="nota.status === 'Fechada'">
-            {{ nota.status }}
-          </span>
-        </td>
-        <td>{{ nota.quantidade_itens }} {{ nota.quantidade_itens === 1 ? 'item' : 'itens' }} · {{ nota.quantidade_total }} unidades</td>
-        <td>
-          <button class="btn" (click)="abrir(nota.numeracao)">Abrir</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-responsive" *ngIf="notas.length > 0">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Numeração</th>
+          <th>Status</th>
+          <th>Produtos</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let nota of notas">
+          <td>{{ numeracaoFormatada(nota.numeracao) }}</td>
+          <td>
+            <span class="badge" [class.badge--aberta]="nota.status === 'Aberta'" [class.badge--fechada]="nota.status === 'Fechada'">
+              {{ nota.status }}
+            </span>
+          </td>
+          <td>{{ nota.quantidade_itens }} {{ nota.quantidade_itens === 1 ? 'item' : 'itens' }} · {{ nota.quantidade_total }} unidades</td>
+          <td>
+            <button class="btn" (click)="abrir(nota.numeracao)">Abrir</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <div class="empty-state" *ngIf="!carregando && notas.length === 0">
     <p><strong>Nenhuma nota fiscal encontrada</strong></p>

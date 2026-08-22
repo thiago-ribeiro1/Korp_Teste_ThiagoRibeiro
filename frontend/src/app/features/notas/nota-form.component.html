@@ -12,7 +12,7 @@
 
 <div class="alert alert--erro" *ngIf="erro">{{ erro }}</div>
 
-<div class="card" style="padding:18px; margin-bottom:18px">
+<div class="card card--padded">
   <h3>Dados da Nota Fiscal</h3>
   <p style="color:var(--cor-texto-suave); font-size:13px">
     A numeração é atribuída automaticamente em sequência. O saldo dos produtos é
@@ -20,11 +20,11 @@
   </p>
 </div>
 
-<div class="card" style="padding:18px">
+<div class="card card--padded">
   <h3>Produtos da Nota</h3>
 
-  <div style="display:flex; gap:10px; align-items:flex-end; margin:14px 0">
-    <div class="field" style="flex:1; margin-bottom:0">
+  <div class="form-row">
+    <div class="field field--grow">
       <label>Produto</label>
       <select [(ngModel)]="produtoSelecionadoId">
         <option [ngValue]="null">Selecione um produto cadastrado</option>
@@ -33,33 +33,35 @@
         </option>
       </select>
     </div>
-    <div class="field" style="width:120px; margin-bottom:0">
+    <div class="field field--fixa">
       <label>Quantidade</label>
       <input type="number" min="1" [(ngModel)]="quantidadeSelecionada" />
     </div>
     <button class="btn btn--primary" (click)="adicionarItem()">Adicionar</button>
   </div>
 
-  <table class="table" *ngIf="itens.length > 0">
-    <thead>
-      <tr>
-        <th>Código</th>
-        <th>Descrição</th>
-        <th>Saldo Atual</th>
-        <th>Quantidade</th>
-        <th>Ação</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of itens">
-        <td>{{ item.codigo }}</td>
-        <td>{{ item.descricao }}</td>
-        <td>{{ item.saldoAtual }}</td>
-        <td>{{ item.quantidade }}</td>
-        <td><button class="btn btn--danger" (click)="removerItem(item.codigo)">Remover</button></td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-responsive" *ngIf="itens.length > 0">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Descrição</th>
+          <th>Saldo Atual</th>
+          <th>Quantidade</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of itens">
+          <td>{{ item.codigo }}</td>
+          <td>{{ item.descricao }}</td>
+          <td>{{ item.saldoAtual }}</td>
+          <td>{{ item.quantidade }}</td>
+          <td><button class="btn btn--danger" (click)="removerItem(item.codigo)">Remover</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <p *ngIf="itens.length === 0" style="color:var(--cor-texto-suave)">Nenhum produto incluído ainda.</p>
 

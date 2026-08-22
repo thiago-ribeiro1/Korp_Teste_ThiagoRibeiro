@@ -12,6 +12,7 @@ import { HealthService, StatusServicos } from './core/services/health.service';
 })
 export class AppComponent implements OnInit {
   status: StatusServicos = { estoque: true, faturamento: true };
+  sidebarAberta = false;
 
   constructor(private health: HealthService) {}
 
@@ -20,6 +21,14 @@ export class AppComponent implements OnInit {
     // Verificação periódica para refletir rapidamente a volta do serviço
     // de estoque após uma falha, sem exigir que o usuário recarregue a página.
     setInterval(() => this.verificarStatus(), 15000);
+  }
+
+  alternarSidebar(): void {
+    this.sidebarAberta = !this.sidebarAberta;
+  }
+
+  fecharSidebar(): void {
+    this.sidebarAberta = false;
   }
 
   private verificarStatus(): void {
