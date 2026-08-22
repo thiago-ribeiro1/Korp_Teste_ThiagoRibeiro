@@ -165,27 +165,3 @@ Acesse `http://localhost:4200`.
    alterado (o painel de "Serviços" também indica o Estoque indisponível).
 4. Suba o Estoque novamente e clique em **Tentar novamente** - a impressão
    é concluída normalmente.
-
-## Principais decisões técnicas
-
-- **Sem ORM no Go**: SQL direto via `pgx`, mantendo o código explícito.
-- **Sem framework HTTP em Go**: `net/http` da biblioteca padrão, usando o
-  roteamento por método + path introduzido no Go 1.22.
-- **Numeração da nota = chave primária**: evita manter um contador
-  sequencial em paralelo.
-- **Fechamento atômico da nota** (`UPDATE ... WHERE status = 'Aberta'`):
-  garante que a nota não seja fechada duas vezes, mesmo sob concorrência,
-  sem precisar de lock explícito.
-- **Baixa de estoque em lote em uma única transação SQL**: se um item
-  falhar, nada é persistido.
-- **Comunicação Faturamento → Estoque via HTTP** com timeout de 5s,
-  diferenciando falha de conexão (`503`, estoque indisponível) de erro de
-  negócio como saldo insuficiente (propaga o status original).
-- **Angular com standalone components**, sem `NgModule`, e lazy loading das
-  telas via `loadComponent()`.
-- **Sem biblioteca de UI** (Angular Material, PrimeNG etc.): a interface é
-  simples o suficiente para não justificar a dependência.
-- **`.env` sem dependência externa**: parser simples de `KEY=VALUE`
-  implementado nos dois serviços.
-- **CORS liberado** (`Access-Control-Allow-Origin: *`): o teste não exige
-  autenticação nem múltiplos ambientes.
