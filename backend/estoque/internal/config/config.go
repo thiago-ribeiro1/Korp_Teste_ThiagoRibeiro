@@ -12,9 +12,7 @@ type Config struct {
 	Port        string
 }
 
-// Load lê variáveis de ambiente do processo e, se existir, de um arquivo
-// .env na raiz do serviço. Não há senha padrão embutida: ESTOQUE_DB_URL é
-// obrigatória para evitar credenciais hardcoded no código-fonte.
+// ESTOQUE_DB_URL é obrigatória, sem senha padrão embutida no código
 func Load() Config {
 	loadDotEnv(".env")
 
@@ -36,10 +34,7 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
-// loadDotEnv aplica pares KEY=VALUE de um arquivo .env como variáveis de
-// ambiente do processo, sem sobrescrever variáveis já definidas no shell.
-// Implementação simples e sem dependências externas, suficiente para o
-// escopo do teste.
+// não sobrescreve variáveis já definidas no shell
 func loadDotEnv(path string) {
 	file, err := os.Open(path)
 	if err != nil {

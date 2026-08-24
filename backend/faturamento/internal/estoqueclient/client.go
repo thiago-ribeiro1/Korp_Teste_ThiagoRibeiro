@@ -9,9 +9,7 @@ import (
 	"time"
 )
 
-// Client encapsula a comunicação HTTP do Faturamento com o serviço de
-// Estoque. Timeout curto para que uma falha do Estoque seja detectada e
-// reportada rapidamente, em vez de travar a impressão da nota.
+// timeout curto pra não travar a impressão se o Estoque cair
 type Client struct {
 	baseURL string
 	http    *http.Client
@@ -30,9 +28,7 @@ type Produto struct {
 	Saldo     int    `json:"saldo"`
 }
 
-// ErrIndisponivel identifica falha de comunicação com o Estoque (timeout,
-// conexão recusada etc.), distinta de um erro de negócio retornado pelo
-// próprio serviço (ex: saldo insuficiente).
+// falha de comunicação (timeout, conexão recusada), diferente de erro de negócio
 type ErrIndisponivel struct{ causa error }
 
 func (e *ErrIndisponivel) Error() string {
@@ -40,8 +36,7 @@ func (e *ErrIndisponivel) Error() string {
 }
 func (e *ErrIndisponivel) Unwrap() error { return e.causa }
 
-// ErrNegocio representa um erro de negócio retornado pelo Estoque com
-// status HTTP 4xx (produto não encontrado, saldo insuficiente etc.).
+// erro de negócio do Estoque (produto não encontrado, saldo insuficiente etc.)
 type ErrNegocio struct {
 	Status   int
 	Mensagem string
@@ -49,8 +44,7 @@ type ErrNegocio struct {
 
 func (e *ErrNegocio) Error() string { return e.Mensagem }
 
-// ObterProdutoPorCodigo busca um produto pelo código exato, reaproveitando
-// o endpoint de listagem com filtro de busca já existente no Estoque.
+// reaproveita o endpoint de listagem com filtro, não existe busca por código exato
 func (c *Client) ObterProdutoPorCodigo(ctx context.Context, codigo string) (Produto, error) {
 	url := fmt.Sprintf("%s/produtos?busca=%s", c.baseURL, codigo)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -87,10 +81,7 @@ type ItemBaixa struct {
 	Quantidade int    `json:"quantidade"`
 }
 
-// BaixarLote solicita ao Estoque a redução de saldo de todos os itens de
-// uma nota em uma única chamada. Erro de transporte/timeout vira
-// ErrIndisponivel; erro de negócio (404/409) vira ErrNegocio, para que o
-// chamador consiga diferenciar "estoque fora do ar" de "saldo insuficiente".
+// timeout vira ErrIndisponivel, erro de negócio (404/409) vira ErrNegocio
 func (c *Client) BaixarLote(ctx context.Context, itens []ItemBaixa) error {
 	body, err := json.Marshal(map[string]any{"itens": itens})
 	if err != nil {

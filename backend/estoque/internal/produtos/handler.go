@@ -161,9 +161,7 @@ type baixaLoteRequest struct {
 	Itens []ItemBaixa `json:"itens"`
 }
 
-// baixarLote é o endpoint interno chamado pelo serviço de Faturamento no
-// momento da impressão de uma nota, para dar baixa no saldo de todos os
-// produtos da nota de uma só vez, de forma atômica.
+// endpoint interno, chamado pelo Faturamento na hora de imprimir a nota
 func (h *Handler) baixarLote(w http.ResponseWriter, r *http.Request) {
 	var req baixaLoteRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

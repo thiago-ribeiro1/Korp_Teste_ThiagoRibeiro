@@ -45,8 +45,7 @@ func (req notaRequest) validar() error {
 	return nil
 }
 
-// resolverItens consulta o Estoque para confirmar a existência de cada
-// produto e obter sua descrição atual antes de gravar a nota.
+// confirma no Estoque que o produto existe e pega a descrição atual
 func (h *Handler) resolverItens(r *http.Request, entradas []ItemEntrada) ([]ItemNota, error) {
 	itens := make([]ItemNota, 0, len(entradas))
 	for _, entrada := range entradas {
@@ -164,8 +163,7 @@ func (h *Handler) atualizarItens(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, nota)
 }
 
-// imprimir só fecha a nota depois que o Estoque confirma a baixa de saldo.
-// Se o Estoque falhar, nada é persistido aqui: a nota permanece Aberta.
+// só fecha a nota depois que o Estoque confirma a baixa; se falhar, ela continua Aberta
 func (h *Handler) imprimir(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
@@ -214,8 +212,7 @@ func (h *Handler) imprimir(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, notaFechada)
 }
 
-// respondEstoqueErro traduz falhas do cliente do Estoque para respostas
-// HTTP apropriadas, distinguindo indisponibilidade de erro de negócio.
+// diferencia estoque fora do ar de erro de negócio
 func respondEstoqueErro(w http.ResponseWriter, err error) {
 	var indisponivel *estoqueclient.ErrIndisponivel
 	if errors.As(err, &indisponivel) {

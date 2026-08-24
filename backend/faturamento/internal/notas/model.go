@@ -2,8 +2,7 @@ package notas
 
 import "time"
 
-// Numeracao é a própria chave primária da nota (id), evitando manter um
-// contador sequencial redundante.
+// numeração é o próprio id, sem contador redundante
 type Nota struct {
 	Numeracao int        `json:"numeracao"`
 	Status    string     `json:"status"`
@@ -22,8 +21,7 @@ type ItemNota struct {
 	Quantidade       int    `json:"quantidade"`
 }
 
-// ItemEntrada é o item informado pelo cliente ao criar ou editar uma nota;
-// a descrição é sempre resolvida no servidor a partir do código.
+// descrição sempre resolvida no servidor, nunca confia no que o cliente manda
 type ItemEntrada struct {
 	Codigo     string `json:"codigo"`
 	Quantidade int    `json:"quantidade"`

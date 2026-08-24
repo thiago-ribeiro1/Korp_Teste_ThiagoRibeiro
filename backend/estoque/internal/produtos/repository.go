@@ -40,9 +40,7 @@ func (r *Repository) Create(ctx context.Context, codigo, descricao string, saldo
 	return p, nil
 }
 
-// List retorna os produtos cadastrados. Se "busca" não for vazio, filtra
-// por código ou descrição (case-insensitive), refletindo o campo de busca
-// mostrado no protótipo.
+// filtra por código ou descrição, case-insensitive
 func (r *Repository) List(ctx context.Context, busca string) ([]Produto, error) {
 	query := `SELECT id, codigo, descricao, saldo, criado_em FROM produtos`
 	args := []any{}
@@ -113,10 +111,7 @@ func (r *Repository) Delete(ctx context.Context, id int) error {
 	return nil
 }
 
-// BaixarSaldoLote reduz o saldo de vários produtos de uma só vez, dentro de
-// uma única transação. Se qualquer item não existir ou tiver saldo
-// insuficiente, toda a operação é revertida — garantindo que nenhum saldo
-// fique alterado parcialmente, requisito central do cenário de impressão.
+// tudo numa transação: se faltar saldo de um item, reverte a baixa inteira
 func (r *Repository) BaixarSaldoLote(ctx context.Context, itens []ItemBaixa) error {
 	tx, err := r.pool.Begin(ctx)
 	if err != nil {

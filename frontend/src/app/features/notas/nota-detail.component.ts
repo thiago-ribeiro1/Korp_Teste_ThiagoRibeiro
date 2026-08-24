@@ -55,9 +55,7 @@ export class NotaDetailComponent implements OnInit {
     return numeracao.toString().padStart(6, '0');
   }
 
-  // Ao imprimir, o indicador de processamento fica visível durante a
-  // chamada; se o estoque falhar, a nota permanece Aberta e a UI oferece
-  // "tentar novamente" sem exigir recarregar a página.
+  // se o estoque falhar a nota continua Aberta, dá pra tentar de novo sem recarregar
   imprimir(): void {
     if (!this.nota || this.nota.status !== 'Aberta') return;
 

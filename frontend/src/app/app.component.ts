@@ -18,8 +18,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.verificarStatus();
-    // Verificação periódica para refletir rapidamente a volta do serviço
-    // de estoque após uma falha, sem exigir que o usuário recarregue a página.
+    // checa de novo periodicamente pra refletir quando o serviço volta do ar
     setInterval(() => this.verificarStatus(), 15000);
   }
 

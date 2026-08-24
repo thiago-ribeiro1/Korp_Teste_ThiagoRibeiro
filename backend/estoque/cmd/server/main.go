@@ -48,9 +48,7 @@ func main() {
 	}
 }
 
-// withCORS libera o acesso do frontend Angular (rodando em outra porta) aos
-// dois microsserviços. Origem liberada de forma ampla propositalmente, já
-// que o teste não define autenticação nem múltiplos ambientes.
+// CORS liberado geral de propósito, não tem auth nem múltiplos ambientes aqui
 func withCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")

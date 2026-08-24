@@ -13,9 +13,7 @@ type Config struct {
 	EstoqueBaseURL string
 }
 
-// Load lê variáveis de ambiente do processo e, se existir, de um arquivo
-// .env na raiz do serviço. FATURAMENTO_DB_URL é obrigatória: não há senha
-// padrão embutida no código.
+// FATURAMENTO_DB_URL é obrigatória, sem senha padrão embutida no código
 func Load() Config {
 	loadDotEnv(".env")
 

@@ -8,9 +8,7 @@ export interface StatusServicos {
   faturamento: boolean;
 }
 
-// Consulta os endpoints /health dos dois microsserviços diretamente do
-// frontend, para exibir a situação de cada serviço na tela (conforme o
-// protótipo), sem precisar de um endpoint agregador dedicado no backend.
+// chama os dois /health direto do front, não tem endpoint agregador no backend
 @Injectable({ providedIn: 'root' })
 export class HealthService {
   constructor(private http: HttpClient) {}

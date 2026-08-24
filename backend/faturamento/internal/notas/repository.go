@@ -23,8 +23,7 @@ func NewRepository(pool *pgxpool.Pool) *Repository {
 	return &Repository{pool: pool}
 }
 
-// Create insere a nota (status inicial "Aberta") e seus itens em uma única
-// transação: se a inserção de algum item falhar, nenhuma nota é criada.
+// nota e itens na mesma transação: se um item falhar, não cria nada
 func (r *Repository) Create(ctx context.Context, itens []ItemNota) (Nota, error) {
 	if len(itens) == 0 {
 		return Nota{}, ErrItensVazios
@@ -67,8 +66,7 @@ func (r *Repository) Create(ctx context.Context, itens []ItemNota) (Nota, error)
 	return nota, nil
 }
 
-// List retorna as notas com contadores agregados de itens/quantidade,
-// usados na listagem (sem carregar os itens completos de cada nota).
+// traz só os contadores de itens/quantidade, sem carregar os itens completos
 func (r *Repository) List(ctx context.Context, status, busca string) ([]Nota, error) {
 	query := `
         SELECT n.id, n.status, n.criado_em, n.fechado_em,
@@ -131,8 +129,7 @@ func (r *Repository) GetByID(ctx context.Context, id int) (Nota, error) {
 	return n, rows.Err()
 }
 
-// UpdateItens substitui os itens de uma nota. Só é permitido quando a nota
-// ainda está Aberta.
+// só permite trocar os itens se a nota ainda está Aberta
 func (r *Repository) UpdateItens(ctx context.Context, id int, itens []ItemNota) (Nota, error) {
 	if len(itens) == 0 {
 		return Nota{}, ErrItensVazios
@@ -177,10 +174,7 @@ func (r *Repository) UpdateItens(ctx context.Context, id int, itens []ItemNota) 
 	return r.GetByID(ctx, id)
 }
 
-// FecharSeAberta marca a nota como Fechada apenas se ela ainda estiver
-// Aberta, de forma atômica (a condição de status faz parte do próprio
-// UPDATE). Evita que duas impressões concorrentes fechem a mesma nota
-// duas vezes e garante o bloqueio de reimpressão sem lock explícito.
+// condição de status no próprio UPDATE evita fechar a nota duas vezes em impressões concorrentes
 func (r *Repository) FecharSeAberta(ctx context.Context, id int) (Nota, error) {
 	var n Nota
 	err := r.pool.QueryRow(ctx,

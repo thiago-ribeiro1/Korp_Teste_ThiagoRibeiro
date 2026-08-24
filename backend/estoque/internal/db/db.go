@@ -7,12 +7,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// schema define a estrutura mínima necessária para o serviço de Estoque.
-//
-// Optamos por aplicar o schema diretamente no startup do serviço (via
-// CREATE TABLE IF NOT EXISTS), em vez de usar uma ferramenta de migration
-// (como golang-migrate), porque o escopo do teste é pequeno e uma única
-// tabela não justifica essa complexidade adicional.
+// aplica o schema no startup em vez de usar migration tool, não compensa pra uma tabela só
 const schema = `
 CREATE TABLE IF NOT EXISTS produtos (
     id SERIAL PRIMARY KEY,
@@ -23,10 +18,6 @@ CREATE TABLE IF NOT EXISTS produtos (
 );
 `
 
-// Connect abre um pool de conexões com o PostgreSQL usando pgxpool
-// (em vez de uma conexão única) para suportar múltiplas requisições
-// HTTP concorrentes de forma segura, e valida a conectividade com um
-// Ping antes de retornar.
 func Connect(ctx context.Context, url string) (*pgxpool.Pool, error) {
 	pool, err := pgxpool.New(ctx, url)
 	if err != nil {
@@ -41,9 +32,7 @@ func Connect(ctx context.Context, url string) (*pgxpool.Pool, error) {
 	return pool, nil
 }
 
-// Migrate garante que as tabelas necessárias existam, aplicando o schema
-// definido acima. É idempotente: pode ser chamado toda vez que o serviço
-// sobe, sem causar erro caso a tabela já exista.
+// idempotente, pode rodar toda vez que o serviço sobe
 func Migrate(ctx context.Context, pool *pgxpool.Pool) error {
 	if _, err := pool.Exec(ctx, schema); err != nil {
 		return fmt.Errorf("erro ao aplicar schema: %w", err)

@@ -7,8 +7,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// A numeração sequencial da nota é a própria chave primária (id), evitando
-// manter um contador redundante em paralelo.
+// id da nota já serve de numeração, sem contador redundante
 const schema = `
 CREATE TABLE IF NOT EXISTS notas (
     id SERIAL PRIMARY KEY,
