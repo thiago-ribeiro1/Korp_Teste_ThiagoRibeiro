@@ -1,6 +1,4 @@
-# Korp_Teste_ThiagoRibeiro
-
-Sistema de emissão de Notas Fiscais
+# Sistema de emissão de Notas Fiscais
 
 ## Sobre o projeto
 
