@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { ProdutosService } from '../../core/services/produtos.service';
 import { Produto, ProdutoInput } from '../../core/models/produto.model';
 
@@ -27,10 +29,44 @@ export class ProdutosListComponent implements OnInit {
 
   produtoParaExcluir: Produto | null = null;
 
+  private destroyRef = inject(DestroyRef);
+  private buscaChange = new Subject<string>();
+
   constructor(private produtosService: ProdutosService) {}
 
   ngOnInit(): void {
     this.carregar();
+
+    // Busca em tempo real: espera o usuário parar de digitar (debounce),
+    // ignora valores repetidos e cancela a requisição anterior se uma nova
+    // busca chegar antes dela responder (switchMap), evitando resultado
+    // desatualizado sobrescrever um mais recente.
+    this.buscaChange
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((busca) => {
+          this.carregando = true;
+          this.erro = '';
+          return this.produtosService.listar(busca || undefined);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (produtos) => {
+          this.produtos = produtos;
+          this.carregando = false;
+        },
+        error: () => {
+          this.erro = 'Não foi possível carregar os produtos. Verifique se o serviço de estoque está disponível.';
+          this.carregando = false;
+        },
+      });
+  }
+
+  onBuscaChange(valor: string): void {
+    this.busca = valor;
+    this.buscaChange.next(valor);
   }
 
   carregar(): void {

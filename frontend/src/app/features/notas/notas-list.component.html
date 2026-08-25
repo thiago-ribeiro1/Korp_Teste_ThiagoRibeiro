@@ -6,10 +6,9 @@
     <input
       class="btn search-input"
       placeholder="Buscar por numeração"
-      [(ngModel)]="busca"
-      (keyup.enter)="carregar()"
+      [ngModel]="busca"
+      (ngModelChange)="onBuscaChange($event)"
     />
-    <button class="btn" (click)="carregar()">Filtrar</button>
     <button class="btn btn--primary" routerLink="/notas-fiscais/nova">+ Nova Nota Fiscal</button>
   </div>
 </div>

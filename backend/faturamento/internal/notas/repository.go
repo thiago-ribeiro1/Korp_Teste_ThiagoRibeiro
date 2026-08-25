@@ -75,7 +75,7 @@ func (r *Repository) List(ctx context.Context, status, busca string) ([]Nota, er
         FROM notas n
         LEFT JOIN itens_nota i ON i.nota_id = n.id
         WHERE ($1 = '' OR n.status = $1)
-          AND ($2 = '' OR CAST(n.id AS TEXT) ILIKE '%' || $2 || '%')
+          AND ($2 = '' OR LPAD(n.id::text, 6, '0') ILIKE '%' || $2 || '%')
         GROUP BY n.id
         ORDER BY n.id DESC`
 

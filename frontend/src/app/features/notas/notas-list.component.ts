@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { NotasService } from '../../core/services/notas.service';
 import { Nota } from '../../core/models/nota.model';
 
@@ -18,6 +20,9 @@ export class NotasListComponent implements OnInit {
   carregando = false;
   erro = '';
 
+  private destroyRef = inject(DestroyRef);
+  private buscaChange = new Subject<string>();
+
   constructor(
     private notasService: NotasService,
     private router: Router,
@@ -25,6 +30,35 @@ export class NotasListComponent implements OnInit {
 
   ngOnInit(): void {
     this.carregar();
+
+    // Busca em tempo real, com debounce e cancelamento da requisição
+    // anterior via switchMap, seguindo o mesmo padrão da tela de produtos.
+    this.buscaChange
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((busca) => {
+          this.carregando = true;
+          this.erro = '';
+          return this.notasService.listar(this.filtroStatus || undefined, busca || undefined);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (notas) => {
+          this.notas = notas;
+          this.carregando = false;
+        },
+        error: () => {
+          this.erro = 'Não foi possível carregar as notas fiscais. Verifique se o serviço de faturamento está disponível.';
+          this.carregando = false;
+        },
+      });
+  }
+
+  onBuscaChange(valor: string): void {
+    this.busca = valor;
+    this.buscaChange.next(valor);
   }
 
   carregar(): void {
